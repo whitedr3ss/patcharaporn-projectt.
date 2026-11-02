@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="format-detection" content="telephone=no,email=no,address=no">
+<title>Bambi's Cozy Closet | คอมมูนิตี้คนรักน้องกวางสุดน่ารัก</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          bambi: {
+            50: '#fdfbfa',
+            100: '#f9f3ef',
+            200: '#f0e3dc',
+            300: '#e3ccbc',
+            400: '#cfad96',
+            500: '#b88d70',
+            600: '#9d7356',
+            700: '#7c5943',
+            800: '#644736',
+            900: '#543c2e',
+          },
+          pastelPink: {
+            DEFAULT: '#ffedf0',
+            light: '#fff5f7',
+            dark: '#f7d1d8'
+          },
+          cream: '#fffdf9'
+        },
+        fontFamily: {
+          sans: ['Prompt', 'system-ui', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
+<style>
+  :root {
+    --bg: #fefcfb;
+    --card: #ffffff;
+    --text: #543c2e;
+    --mute: #9d8374;
+    --line: #f0e3dc;
+    --a: #d98880;
+    --b: #b88d70;
+    --g: linear-gradient(135deg, #d98880 0%, #b88d70 100%);
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Prompt', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  .grad-text {
+    background: var(--g);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+    50% { transform: translateY(-10px) rotate(3deg); opacity: 1; }
+    100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+  }
+
+  .floating {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  /* Scrapbook paper texture look */
+  .scrapbook-card {
+    background: #fffdf9;
+    border: 2px dashed #e3ccbc;
+    box-shadow: 0 10px 25px -5px rgba(184, 141, 112, 0.1);
+    position: relative;
+  }
+
+  .tape {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 24px;
+    background-color: rgba(240, 227, 220, 0.7);
+    border-left: 2px dashed #cfad96;
+    border-right: 2px dashed #cfad96;
+    z-index: 10;
+  }
+
+  /* Falling particles animation */
+  @keyframes fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+    20% { opacity: 0.8; }
+    100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+  }
+
+  .particle {
+    position: fixed;
+    top: -20px;
+    z-index: 999;
+    pointer-events: none;
+    animation: fall linear infinite;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f9f3ef;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #e3ccbc;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #cfad96;
+  }
+</style>
+</head>
+<body class="selection:bg-pink-200 selection:text-pink-950">
+
+  <!-- Falling Particles Container -->
+  <div id="particleContainer"></div>
+
+  <!-- Popup Modal for Bambi Mode -->
+  <div id="bambiModal" class="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl border border-[#f0e3dc] shadow-2xl p-6 max-w-sm w-full text-center space-y-4 animate-fadeIn relative">
+      <div class="absolute top-4 right-4">
+        <button onclick="toggleBambiModal(false)" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition">
+          ✕
+        </button>
+      </div>
+      <div class="w-16 h-16 mx-auto bg-gradient-to-tr from-amber-100 to-pink-100 rounded-full flex items-center justify-center text-3xl shadow-inner floating">
+        🦌✨
+      </div>
+      <div>
+        <h3 class="font-extrabold text-xl text-[#543c2e]">Bambi Community Mode</h3>
+        <p class="text-xs text-[#9d8374] mt-1">เลือกฟังก์ชันพิเศษเพื่อสัมผัสความอบอุ่นจากคอมมูนิตี้คนรักกวางค่ะ</p>
+      </div>
+      <div class="space-y-2 pt-2">
+        <button onclick="toggleMusic(); toggleBambiModal(false);" id="modalMusicBtn" class="w-full bg-pink-50 hover:bg-pink-100 text-pink-900 font-semibold py-3 px-4 rounded-2xl border border-pink-200 shadow-sm transition flex items-center justify-center gap-2 text-sm">
+          <span>🔔</span> <span id="modalMusicText">เปิดเสียงกระดิ่งกวางน้อย</span>
+        </button>
+        <button onclick="petBambi(); toggleBambiModal(false);" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-900 font-semibold py-3 px-4 rounded-2xl border border-amber-200 shadow-sm transition flex items-center justify-center gap-2 text-sm">
+          <span>✨</span> <span>ทักทายกวางน้อย (Pet Bambi)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="sticky top-0 z-40 bg-[#fefcfb]/90 backdrop-blur-md border-b border-[#f0e3dc] transition-all">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchPage('home')">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-200 to-pink-200 flex items-center justify-center text-lg shadow-sm floating">
+          🦌
+        </div>
+        <span class="font-extrabold tracking-wider text-base md:text-lg grad-text">BAMBI & CO. ♡</span>
+      </div>
+      
+      <!-- Nav Tabs -->
+      <div class="hidden md:flex items-center gap-2">
+        <button onclick="switchPage('home')" id="nav-home" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition bg-pink-100 text-pink-900 shadow-sm">
+          🏠 Home
+        </button>
+        <button onclick="switchPage('story')" id="nav-story" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition text-[#7c5943] hover:bg-pink-50">
+          ✨ Story
+        </button>
+        <button onclick="switchPage('collection')" id="nav-collection" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition text-[#7c5943] hover:bg-pink-50">
+          🤎 Collection
+        </button>
+        <button onclick="switchPage('about')" id="nav-about" class="nav-btn px-5 py-2 rounded-full text-sm font-semibold transition text-[#7c5943] hover:bg-pink-50">
+          🌸 About
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="toggleBambiModal(true)" class="bg-pink-100 hover:bg-pink-200 text-pink-800 px-4 py-2 rounded-2xl text-xs font-bold border border-pink-200 shadow-sm active:scale-95 transition flex items-center gap-1.5">
+          <span>🐾</span> <span>Bambi Mode</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Nav Bar -->
+    <div class="md:hidden flex justify-around py-2 border-t border-[#f0e3dc] bg-white/80 backdrop-blur-md px-2 text-xs font-semibold">
+      <button onclick="switchPage('home')" id="mob-nav-home" class="mob-btn px-3 py-1.5 rounded-full text-pink-900 bg-pink-100">Home</button>
+      <button onclick="switchPage('story')" id="mob-nav-story" class="mob-btn px-3 py-1.5 rounded-full text-[#7c5943]">Story</button>
+      <button onclick="switchPage('collection')" id="mob-nav-collection" class="mob-btn px-3 py-1.5 rounded-full text-[#7c5943]">Collection</button>
+      <button onclick="switchPage('about')" id="mob-nav-about" class="mob-btn px-3 py-1.5 rounded-full text-[#7c5943]">About</button>
+    </div>
+  </nav>
+
+  <!-- ================= PAGE: HOME ================= -->
+  <div id="page-home" class="page-content space-y-16 animate-fadeIn pb-16">
+    
+    <!-- Hero Section -->
+    <section class="max-w-6xl mx-auto px-6 pt-8 text-center md:text-left">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        <div class="md:col-span-7 space-y-6">
+          <div class="inline-block text-xs font-bold tracking-widest text-amber-700 bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200 shadow-sm">
+            ✨ DEER LOVERS COMMUNITY WORLD
+          </div>
+          <h1 class="text-4xl md:text-6xl font-extrabold leading-tight">
+            คอมมูนิตี้คนรักน้องกวาง<br><span class="grad-text">อบอุ่นหัวใจไปด้วยกัน</span> 🤎
+          </h1>
+          <p class="text-[#9d8374] text-base md:text-lg max-w-xl leading-relaxed">
+            พื้นที่รวบรวมไอเทม คอลเลคชั่น และเรื่องราวสุดละมุนสำหรับคนรักน้องกวางเหมือนกัน โทนสีครีม น้ำตาลอบอุ่น และชมพูพาสเทลที่สะท้อนความน่ารักสดใสในป่าใหญ่
+          </p>
+          <div class="pt-2 flex flex-wrap gap-4 justify-center md:justify-start">
+            <button onclick="switchPage('collection')" class="bg-gradient-to-r from-[#b88d70] to-[#9d7356] hover:from-[#9d7356] hover:to-[#7c5943] text-white font-semibold px-7 py-3.5 rounded-full shadow-md transition transform hover:-translate-y-1 duration-300 flex items-center gap-2">
+              <span>✨ สำรวจคอลเลคชั่นทั้งหมด</span>
+            </button>
+            <button onclick="petBambi()" class="bg-pink-100 hover:bg-pink-200 text-pink-800 font-semibold px-6 py-3.5 rounded-full border border-pink-200 shadow-sm transition transform hover:-translate-y-1 duration-300 flex items-center gap-2">
+              <span>🦌 ทักทายกวางน้อย</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hero Gallery Preview -->
+        <div class="md:col-span-5">
+          <div class="bg-[#f9f3ef] border border-[#f0e3dc] rounded-3xl p-5 shadow-sm grid grid-cols-3 gap-3">
+            <div class="col-span-3 aspect-[16/9] rounded-2xl overflow-hidden shadow-inner bg-white">
+              <img src="https://i.pinimg.com/736x/df/c7/b2/dfc7b2748422115e4866e076305bca91.jpg" alt="Fawn Leg Warmers" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x338/f9f3ef/b88d70?text=Deer+Community'">
+            </div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-inner bg-white">
+              <img src="https://i.pinimg.com/736x/dc/b9/bf/dcb9bfd71c62016184864656d9c2d2bf.jpg" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/200x200/f9f3ef/b88d70?text=Item+1'">
+            </div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-inner bg-white">
+              <img src="https://i.pinimg.com/1200x/12/b6/00/12b600c04b3aabfa3180b6ecff467f80.jpg" alt="Fawn Loungewear" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/200x200/f9f3ef/b88d70?text=Item+2'">
+            </div>
+            <div class="aspect-square rounded-xl overflow-hidden shadow-inner bg-white">
+              <img src="https://i.pinimg.com/736x/b2/a6/a1/b2a6a174a0e2da1007dc930f99c5153d.jpg" alt="Bambi Bag" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/200x200/f9f3ef/b88d70?text=Item+3'">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Message Banner (Triggered by button) -->
+    <div id="interactiveBanner" class="max-w-4xl mx-auto px-6 hidden">
+      <div class="bg-gradient-to-r from-pink-50 to-amber-50 border border-pink-200 rounded-3xl p-6 text-center shadow-sm relative overflow-hidden">
+        <span class="text-3xl">🦌💖✨</span>
+        <h3 id="bannerText" class="font-bold text-lg text-pink-900 mt-2">น้องกวางส่งเสียงทักทาย: "ยินดีต้อนรับชาวแก๊งคนรักกวางเข้าสู่คอมมูนิตี้ของเราค่ะ!"</h3>
+        <p class="text-xs text-[#9d8374] mt-1">กดหัวใจด้านล่างเพื่อให้กำลังใจคอมมูนิตี้นี้ได้นะ!</p>
+        <button onclick="sendLove()" id="loveBtn" class="mt-4 bg-white hover:bg-pink-100 text-pink-600 border border-pink-200 px-6 py-2.5 rounded-full font-semibold text-sm shadow-sm transition transform active:scale-95">
+          ❤️ ส่งหัวใจให้คอมมูนิตี้ (<span id="loveCount">128</span>)
+        </button>
+      </div>
+    </div>
+
+    <!-- NEW GIMMICK 1: Feed Bambi (ให้อาหารน้องกวางน้อย) -->
+    <section class="max-w-4xl mx-auto px-6">
+      <div class="bg-white border-2 border-dashed border-amber-200 rounded-3xl p-8 text-center shadow-sm relative overflow-hidden">
+        <div class="w-16 h-16 mx-auto bg-amber-50 border border-amber-200 rounded-full flex items-center justify-center text-3xl shadow-inner floating mb-3">
+          🥕
+        </div>
+        <span class="text-xs font-bold tracking-widest text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+          ✨ NEW GIMMICK: ให้อาหารน้องกวางน้อย
+        </span>
+        <h3 class="text-2xl font-extrabold text-[#543c2e] mt-3">แบมบี้กำลังหิวแล้ว เลือกของโปรดให้น้องกันเถอะ!</h3>
+        <p id="feedingStatus" class="text-sm text-[#9d8374] mt-1">ระดับความอิ่มของน้องกวาง: <span class="font-bold text-amber-700">หิวโซสุดๆ (0/3 ขนม)</span></p>
+        
+        <div class="flex justify-center gap-3 mt-5 flex-wrap">
+          <button onclick="feedBambi('🥕 แครอทหวานกรอบ')" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 px-5 py-2.5 rounded-2xl font-semibold text-sm shadow-sm transition active:scale-95">
+            🥕 แครอท
+          </button>
+          <button onclick="feedBambi('🍎 แอปเปิ้ลแดงสด')" class="bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-900 px-5 py-2.5 rounded-2xl font-semibold text-sm shadow-sm transition active:scale-95">
+            🍎 แอปเปิ้ล
+          </button>
+          <button onclick="feedBambi('🌿 ยอดอ่อนใบสน')" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 px-5 py-2.5 rounded-2xl font-semibold text-sm shadow-sm transition active:scale-95">
+            🌿 ใบสน
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW GIMMICK 2: Daily Deer Fortune (สุ่มคำอวยพร / เซียมซีคนรักกวาง) -->
+    <section class="max-w-4xl mx-auto px-6">
+      <div class="bg-gradient-to-br from-pink-50 via-white to-amber-50 border border-[#f0e3dc] rounded-3xl p-8 text-center shadow-sm space-y-4">
+        <div class="w-14 h-14 mx-auto bg-pink-100 border border-pink-200 rounded-full flex items-center justify-center text-2xl shadow-inner">
+          🥠
+        </div>
+        <span class="text-xs font-bold tracking-widest text-pink-800 bg-pink-100 px-3 py-1 rounded-full border border-pink-200">
+          🌸 DAILY DEER FORTUNE
+        </span>
+        <h3 class="text-2xl font-extrabold text-[#543c2e]">เซียมซีคำอวยพรสุดคิ้วท์ประจำวัน</h3>
+        <p id="fortuneText" class="text-sm md:text-base text-[#7c5943] italic max-w-xl mx-auto bg-white/80 p-4 rounded-2xl border border-pink-100 shadow-inner">
+          "กดปุ่มด้านล่างเพื่อสุ่มคำทำนายความน่ารักและโชคดีสำหรับชาวแก๊งคนรักกวางวันนี้กันเถอะค่ะ!"
+        </p>
+        <div>
+          <button onclick="drawFortune()" class="bg-gradient-to-r from-pink-400 to-amber-400 hover:from-pink-500 hover:to-amber-500 text-white font-bold px-7 py-3 rounded-full text-sm shadow-md transition transform active:scale-95">
+            ✨ สุ่มคำทำนายเซียมซีลูกกวาง
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Highlights / Features Section -->
+    <section class="max-w-6xl mx-auto px-6 py-8">
+      <div class="text-center mb-10">
+        <span class="text-xs font-bold tracking-widest text-[#b88d70] uppercase">COMMUNITY VIBES & HIGHLIGHTS</span>
+        <h2 class="text-3xl font-extrabold mt-2">ทำไมชาวแก๊งถึงหลงรักคอมมูนิตี้นี้?</h2>
+        <p class="text-[#9d8374] text-sm mt-1">จุดเด่นและความใส่ใจที่เราตั้งใจรวบรวมให้เพื่อนๆ คนรักกวางโดยเฉพาะ</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-3xl border border-[#f0e3dc] shadow-sm text-center space-y-3 hover:shadow-md transition">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-2xl">
+            🧶
+          </div>
+          <h3 class="font-bold text-lg">ขนนุ่มฟูละมุนผิว</h3>
+          <p class="text-[#9d8374] text-xs leading-relaxed">
+            รวบรวมไอเทมผ้าสำลีและเฟอร์เทียมเกรดพรีเมียม ให้ความรู้สึกอบอุ่น สวมใส่สบาย นุ่มนิ่มเหมือนสัมผัสจากน้องกวาง
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border border-[#f0e3dc] shadow-sm text-center space-y-3 hover:shadow-md transition">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-pink-50 border border-pink-200 flex items-center justify-center text-2xl">
+            🌸
+          </div>
+          <h3 class="font-bold text-lg">โทนสีพาสเทลละมุนตา</h3>
+          <p class="text-[#9d8374] text-xs leading-relaxed">
+            คุมโทนสีน้ำตาลอ่อน ครีม และชมพูพาสเทล ฟีลคาเฟ่หน้าหนาวที่ชาวแก๊งสายคาเฟ่ต้องชื่นชอบและถ่ายรูปสวย
+          </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border border-[#f0e3dc] shadow-sm text-center space-y-3 hover:shadow-md transition">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-2xl">
+            🦌
+          </div>
+          <h3 class="font-bold text-lg">ศูนย์รวมคนรักกวาง</h3>
+          <p class="text-[#9d8374] text-xs leading-relaxed">
+            พื้นที่แชร์ความสุข เกร็ดความรู้ และไอเทมสุดคิ้วท์ที่ตอบโจทย์คนคลั่งรักน้องกวางตัวจริงเสียงจริง
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Daily Mood & Lookbook Sneak Peek -->
+    <section class="max-w-6xl mx-auto px-6 py-6">
+      <div class="bg-gradient-to-br from-[#f9f3ef] to-[#f0e3dc]/40 border border-[#f0e3dc] rounded-3xl p-8 md:p-12 shadow-sm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div class="space-y-4">
+            <span class="text-xs font-bold tracking-widest text-amber-700 bg-white px-3 py-1 rounded-full border border-amber-200">
+              ✨ FAWN MOOD OF THE DAY
+            </span>
+            <h3 class="text-2xl md:text-3xl font-extrabold">แต่งตัวไปคาเฟ่กับลุคคุณหนูลูกกวาง</h3>
+            <p class="text-[#9d8374] text-sm leading-relaxed">
+              คอมพลีทลุคด้วยที่กันหนาวขนฟูและกระเป๋าถือโครงเหล็กวินเทจ แมตช์ง่าย ให้ชาวแก๊งทุกคนกลายเป็นเจ้าหญิงตัวน้อยในทุ่งหญ้ากว้างได้อย่างมั่นใจ
+            </p>
+            <div class="pt-2">
+              <button onclick="switchPage('collection')" class="bg-[#b88d70] hover:bg-[#9d7356] text-white font-semibold px-6 py-3 rounded-full text-sm shadow-sm transition">
+                ดูไอเทมทั้งหมดในคอลเลคชั่น ➔
+              </button>
+            </div>
+          </div>
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-inner border border-white bg-white">
+            <img src="https://i.pinimg.com/736x/13/2c/70/132c70177694b004f4fa0eda9bef7515.jpg" alt="Fawn Mood" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x450/f9f3ef/b88d70?text=Fawn+Mood'">
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ================= PAGE: STORY ================= -->
+  <div id="page-story" class="page-content hidden animate-fadeIn pb-16">
+    <section class="max-w-5xl mx-auto px-6 py-12">
+      
+      <!-- Header -->
+      <div class="text-center mb-16 space-y-3">
+        <div class="inline-block text-xs font-bold tracking-widest text-[#b88d70] uppercase bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200">
+          📖 BAMBI'S SCRAPBOOK & DIARY
+        </div>
+        <h2 class="text-3xl md:text-5xl font-extrabold">บันทึกคอมมูนิตี้: ทำไมเราถึงรวมตัวกันรักน้องกวาง? 🦌🤎</h2>
+        <p class="text-[#9d8374] text-base md:text-lg max-w-2xl mx-auto">
+          เปิดสมุดบันทึกส่วนตัวย้อนดูจุดเริ่มต้น แรงบันดาลใจ และความผูกพันของคอมมูนิตี้คนรักกวาง
+        </p>
+      </div>
+
+      <!-- Diary Chapter 1 -->
+      <div class="scrapbook-card rounded-3xl p-8 md:p-12 mb-12">
+        <div class="tape"></div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          <div class="md:col-span-5">
+            <div class="aspect-[4/5] rounded-2xl overflow-hidden shadow-md bg-white border border-[#f0e3dc] p-3 rotate-1 hover:rotate-0 transition duration-300">
+              <img src="https://i.pinimg.com/736x/b8/c0/75/b8c075fcff90e53bc43a452ef8a6dd46.jpg" alt="Origin Story" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/400x500/f9f3ef/b88d70?text=Chapter+1'">
+            </div>
+          </div>
+          <div class="md:col-span-7 space-y-4">
+            <span class="text-xs font-bold bg-amber-100 text-amber-900 px-3 py-1 rounded-full">Chapter 01 : จุดเริ่มต้นของคนรักกวาง</span>
+            <h3 class="text-2xl md:text-3xl font-extrabold text-[#543c2e]">ความทรงจำวัยเด็กและกลิ่นอายป่าสน</h3>
+            <p class="text-[#9d8374] text-sm md:text-base leading-relaxed">
+              ตั้งแต่เด็ก เรื่องราวของกวางน้อยในนิทานป่าใหญ่ให้ความรู้สึกปลอดภัย อบอุ่น และอ่อนโยน สีน้ำตาลนุ่มละมุนของขนลูกกวาง ดวงตากลมโต และบรรยากาศฤดูหนาว กลายเป็นภาพจำที่สร้างความสุขทางใจให้แก๊งเพื่อนๆ คนรักกวางเสมอมา
+            </p>
+            <p class="text-[#9d8374] text-sm md:text-base leading-relaxed">
+              นั่นจึงเป็นเหตุผลที่เกิดเป็นคอมมูนิตี้และเว็บไซต์นี้ขึ้นมา สำหรับโปรเจกต์ <strong>Coding for Graphic Design (SPU SDM)</strong> เพื่อรวบรวมความชอบและแบ่งปันไอเทมสุดคิ้วท์ให้ทุกคนได้ฟินไปด้วยกัน
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diary Chapter 2 -->
+      <div class="scrapbook-card rounded-3xl p-8 md:p-12 mb-16">
+        <div class="tape"></div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          <div class="md:col-span-7 space-y-4 md:order-1 order-2">
+            <span class="text-xs font-bold bg-pink-100 text-pink-900 px-3 py-1 rounded-full">Chapter 02 : ไอเดียคอมมูนิตี้แฟชั่น</span>
+            <h3 class="text-2xl md:text-3xl font-extrabold text-[#543c2e]">ผสมผสานแฟชั่น ขนฟู และพาสเทล</h3>
+            <p class="text-[#9d8374] text-sm md:text-base leading-relaxed">
+              การคัดสรรไอเทมในคอมมูนิตี้นี้เน้น <strong>"ความรู้สึกสัมผัส" (Tactile Vibe)</strong> เช่น เลกกิ้งขนเฟอร์นุ่มฟู หมวกไหมพรมแต่งมุก และชุดเลานจ์แวร์สีเอิร์ธโทน เพื่อให้สมาชิกทุกคนรู้สึกเหมือนกำลังเลือกเสื้อผ้าในตู้เสื้อผ้าสุดโปรดช่วงหน้าหนาว
+            </p>
+            <p class="text-[#9d8374] text-sm md:text-base leading-relaxed">
+              ทุกองค์ประกอบถูกออกแบบด้วยความใส่ใจ ทั้งโทนสีครีม น้ำตาลพาสเทล และแอนิเมชั่นน่ารักๆ เพื่อสร้างประสบการณ์ที่ละมุนละไมให้แก๊งคนรักกวางทุกคนค่ะ ✨
+            </p>
+          </div>
+          <div class="md:col-span-5 md:order-2 order-1">
+            <div class="aspect-[4/5] rounded-2xl overflow-hidden shadow-md bg-white border border-[#f0e3dc] p-3 -rotate-1 hover:rotate-0 transition duration-300">
+              <img src="https://i.pinimg.com/1200x/18/8c/5b/188c5b9e83e4d08fa4bf85990ac7f298.jpg" alt="Vibe and Concept" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/400x500/f9f3ef/b88d70?text=Chapter+2'">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Deer Gimmicks Grid -->
+      <div class="space-y-6">
+        <div class="text-center">
+          <span class="bg-amber-100 text-amber-900 text-xs font-bold px-4 py-1.5 rounded-full border border-amber-200">
+            🐾 DEER SECRETS & CUTE GIMMICKS
+          </span>
+          <h3 class="text-2xl md:text-3xl font-extrabold mt-3">ความลับสุดคิ้วท์ของน้องกวางในป่าใหญ่</h3>
+          <p class="text-[#9d8374] text-sm mt-1">คลิกที่การ์ดเพื่อเปิดดูเกร็ดความรู้สนุกๆ แสนน่ารักสำหรับชาวแก๊ง</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div onclick="revealGimmick(1)" class="scrapbook-card rounded-2xl p-6 text-center space-y-3 cursor-pointer group hover:-translate-y-1 transition duration-300">
+            <div class="w-14 h-14 mx-auto bg-amber-50 border border-amber-200 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition">
+              ⭐
+            </div>
+            <h4 class="font-bold text-lg text-[#543c2e]">จุดสีขาวพรางตัว</h4>
+            <p id="gimmick-1" class="text-xs text-[#9d8374] leading-relaxed">
+              ลูกกวางเกิดมาจะมีจุดสีขาวเพื่อซ่อนตัวจากแสงแดดในป่าโปร่ง... <em>(คลิกเพื่ออ่านต่อ)</em>
+            </p>
+          </div>
+
+          <div onclick="revealGimmick(2)" class="scrapbook-card rounded-2xl p-6 text-center space-y-3 cursor-pointer group hover:-translate-y-1 transition duration-300">
+            <div class="w-14 h-14 mx-auto bg-pink-50 border border-pink-200 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition">
+              🦌
+            </div>
+            <h4 class="font-bold text-lg text-[#543c2e]">เรดาร์หูกระดิก</h4>
+            <p id="gimmick-2" class="text-xs text-[#9d8374] leading-relaxed">
+              หูกวางสามารถหมุนรับเสียงได้ 180 องศาโดยไม่ต้องหันหัว... <em>(คลิกเพื่ออ่านต่อ)</em>
+            </p>
+          </div>
+
+          <div onclick="revealGimmick(3)" class="scrapbook-card rounded-2xl p-6 text-center space-y-3 cursor-pointer group hover:-translate-y-1 transition duration-300">
+            <div class="w-14 h-14 mx-auto bg-amber-50 border border-amber-200 rounded-full flex items-center justify-center text-2xl group-hover:scale-110 transition">
+              🌸
+            </div>
+            <h4 class="font-bold text-lg text-[#543c2e]">สัญลักษณ์แห่งความสุข</h4>
+            <p id="gimmick-3" class="text-xs text-[#9d8374] leading-relaxed">
+              ในทางสัญลักษณ์ กวางคือตัวแทนความอ่อนโยน โชคลาภ และความรักบริสุทธิ์... <em>(คลิกเพื่ออ่านต่อ)</em>
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- ================= PAGE: COLLECTION ================= -->
+  <div id="page-collection" class="page-content hidden animate-fadeIn pb-16">
+    <section class="max-w-6xl mx-auto px-6 py-12">
+      <div class="text-center mb-12">
+        <div class="inline-block text-xs font-bold tracking-widest text-[#b88d70] uppercase bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200 mb-2">
+            COMMUNITY COLLECTION DEEP DIVE
+        </div>
+        <h2 class="text-3xl md:text-4xl font-extrabold">ไอเทมยอดฮิตที่คนรักน้องกวางต้องมี</h2>
+        <p class="text-[#9d8374] text-sm md:text-base mt-2">คอลเลคชั่นคัดสรรพิเศษสำหรับคอมมูนิตี้คนรักกวางโดยเฉพาะ</p>
+      </div>
+      <div id="catalogList" class="space-y-12"></div>
+    </section>
+  </div>
+
+  <!-- ================= PAGE: ABOUT ================= -->
+  <div id="page-about" class="page-content hidden animate-fadeIn pb-16">
+    <section class="max-w-4xl mx-auto px-6 py-16">
+      <div class="bg-white rounded-3xl border border-[#f0e3dc] shadow-sm p-8 md:p-12">
+        <div class="text-center md:text-left grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          <div class="md:col-span-4 flex justify-center">
+            <div class="w-36 h-36 rounded-full bg-gradient-to-tr from-pink-100 to-amber-100 flex items-center justify-center text-6xl shadow-inner border-4 border-white floating">
+              🦌🌸
+            </div>
+          </div>
+          <div class="md:col-span-8 space-y-4">
+            <div class="inline-block text-xs font-bold tracking-widest text-[#b88d70] uppercase bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200">
+                ABOUT THE COMMUNITY CREATOR
+            </div>
+            <h2 class="text-2xl md:text-3xl font-extrabold">เบื้องหลังคอมมูนิตี้คนรักน้องกวาง & โปรเจกต์ SPU SDM</h2>
+            <p class="text-[#9d8374] text-sm md:text-base leading-relaxed">
+              สวัสดีค่ะฉันชื่อ <strong>พัชราภรณ์ ราชนิยม</strong> (patcharaporn) นักศึกษาจากวิทยาลัยอุตสาหกรรมดิจิทัลมีเดีย (SPU SDM) ผู้สร้างสรรค์คอมมูนิตี้รวบรวมไอเทมและเรื่องราวน่ารักๆ สำหรับคนรักน้องกวางที่มีหัวใจเดียวกัน
+            </p>
+            <p class="text-[#9d8374] text-sm md:text-base leading-relaxed">
+              เว็บไซต์นี้สะท้อนความอบอุ่น ความผูกพัน และความสุขในรายละเอียดเล็กๆ น้อยๆ ที่นำมาพัฒนาด้วยเทคโนโลยีและหลักการ Graphic Design ภายใต้รายวิชา GAD23867 Coding for Graphic Design ค่ะ
+            </p>
+            <div class="pt-4 flex flex-wrap gap-3">
+              <span class="inline-block bg-[#f9f3ef] border border-[#f0e3dc] text-[#b88d70] font-semibold text-sm px-5 py-2.5 rounded-2xl shadow-sm">
+                Instagram : @icessx_
+              </span>
+              <span class="inline-block bg-pink-50 border border-pink-200 text-pink-800 font-semibold text-sm px-5 py-2.5 rounded-2xl shadow-sm">
+                GAD23867 Coding for Graphic Design
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="max-w-6xl mx-auto px-6 py-8 border-t border-[#f0e3dc] text-center text-xs text-[#9d8374] space-y-2 mt-12">
+    <p>© 2026 พัชราภรณ์ ราชนิยม (patcharaporn) · Bambi & Fawn Furry Community Collection 🤎✨</p>
+    <p>School of Digital Media, Sripatum University (SPU SDM)</p>
+  </footer>
+
+  <!-- JavaScript for Data & Interactivity -->
+  <script>
+    const items = [
+      {
+        img: "https://i.pinimg.com/736x/df/36/a3/df36a3dff392e36a9c928a7c952e5978.jpg",
+        name: "Fawn Furry Leg Warmers",
+        tags: ["Leg Warmers", "Faux Fur", "Cozy", "Winter Style"],
+        text: "ที่กันหนาวขนฟูนุ่มนิ่มลายลูกกวาง ไอเทมยอดฮิตที่ชาวแก๊งคนรักกวางต้องมี แมตช์กับชุดไหนก็น่ารักอบอุ่น"
+      },
+      {
+        img: "https://i.pinimg.com/736x/f9/28/eb/f928eb80103a0faafbf37a4a61ddb62d.jpg",
+        name: "Bambi Bikini Set",
+        tags: ["Swimwear", "Lace & Bows", "Fawn Print", "Sweet Pastel"],
+        text: "ชุดว่ายน้ำบิกินี่ลายกวาง หวานๆ ละมุนหัวใจ ดีเทลผูกโบว์และขอบลูกไม้ละมุน สไตล์สาวหวานคนรักกวาง"
+      },
+      {
+        img: "https://i.pinimg.com/736x/13/2c/70/132c70177694b004f4fa0eda9bef7515.jpg",
+        name: "Fawn Fuzzy Crop & Shorts Set",
+        tags: ["Loungewear", "Knitwear", "Cozy Set", "Deer Antler Vibe"],
+        text: "ชุดเซ็ตลายกวาง ดีเทลน่ารักน่าเอ็นดู ใส่พักผ่อนอยู่บ้านหรือถ่ายรูปเก๋ๆ กับแก๊งเพื่อน นุ่มนิ่มใส่สบายสุดๆ"
+      },
+      {
+        img: "https://down-th.img.susercontent.com/file/cn-11134207-820l4-mhivg0xcwsg501.webp",
+        name: "Bambi Kiss-Lock Handbag",
+        tags: ["Bag", "Faux Fur", "Vintage", "Kiss-Lock"],
+        text: "กระเป๋าถือโครงเหล็กวินเทจบุขนลายกวาง นุ่มมือ อะไหล่ทองหรูหรา ถือไปคาเฟ่สไตล์คุณหนูลูกกวางน้อย"
+      },
+      {
+        img: "https://i.pinimg.com/736x/d0/6e/b8/d06eb89529e9328c75c208c58ed179f6.jpg",
+        name: "Bambi Bow Nail Art",
+        tags: ["Nail Art", "3D Bows", "Fawn Gradient", "Cute Manicure"],
+        text: "เพ้นท์เล็บลายกราเดียนท์ขนกวางแต่งโบว์ 3D สุดคิ้วท์ ละเอียดทุกซอกทุกมุม งานเล็บเจลพาสเทลที่ชาวแก๊งห้ามพลาด"
+      },
+      {
+        img: "https://i.pinimg.com/1200x/2b/ff/cf/2bffcfac7e6b3310d2628c42b02c2ee1.jpg",
+        name: "Darling Fawn Beanie",
+        tags: ["Beanie", "Pearl Details", "Cozy", "Darling Vibe"],
+        text: "หมวกไหมพรมแต่งมุกและกระดุมวินเทจ อุ่นสบาย ท้าลมหนาวสไตล์ลูกกวางน้อย ดีเทลปักลายคำว่า Darling แสนหวาน"
+      }
+    ];
+
+    // Page Switcher Function
+    function switchPage(pageId) {
+      document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(`page-${pageId}`);
+      if (target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.className = "nav-btn px-5 py-2 rounded-full text-sm font-semibold transition text-[#7c5943] hover:bg-pink-50";
+      });
+      const activeNav = document.getElementById(`nav-${pageId}`);
+      if (activeNav) {
+        activeNav.className = "nav-btn px-5 py-2 rounded-full text-sm font-semibold transition bg-pink-100 text-pink-900 shadow-sm";
+      }
+
+      document.querySelectorAll('.mob-btn').forEach(btn => {
+        btn.className = "mob-btn px-3 py-1.5 rounded-full text-[#7c5943]";
+      });
+      const activeMob = document.getElementById(`mob-nav-${pageId}`);
+      if (activeMob) {
+        activeMob.className = "mob-btn px-3 py-1.5 rounded-full text-pink-900 bg-pink-100";
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Render Detailed Collection List
+    const catalogContainer = document.getElementById("catalogList");
+    catalogContainer.innerHTML = items.map((item, index) => {
+      const isEven = index % 2 === 1;
+      return `
+        <article class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center bg-white border border-[#f0e3dc] rounded-3xl p-6 md:p-8 shadow-sm hover:shadow-md transition">
+          <div class="${isEven ? 'md:order-2' : ''}">
+            <div class="aspect-[4/5] bg-[#f9f3ef] rounded-2xl overflow-hidden border border-[#f0e3dc] p-4 flex items-center justify-center relative group">
+              <img src="${item.img}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/600x750/f9f3ef/b88d70?text=Bambi+Item'">
+              <span class="absolute top-6 left-6 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1 rounded-full text-[#b88d70] shadow-sm">
+                Community Item #${String(index + 1).padStart(2, '0')}
+              </span>
+            </div>
+          </div>
+          <div class="${isEven ? 'md:order-1' : ''} space-y-4">
+            <div class="text-4xl md:text-5xl font-extrabold grad-text opacity-80">${String(index + 1).padStart(2, '0')}</div>
+            <h3 class="text-2xl md:text-3xl font-extrabold">${item.name}</h3>
+            <p class="text-[#9d8374] text-sm md:text-base leading-relaxed">${item.text}</p>
+            <div class="flex flex-wrap gap-2 pt-2">
+              ${item.tags.map(tag => `<span class="border border-[#f0e3dc] bg-[#fdfbfa] text-[#b88d70] px-3 py-1 rounded-full text-xs font-medium">✨ ${tag}</span>`).join('')}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    // Gimmick Reveal Function
+    function revealGimmick(id) {
+      const el = document.getElementById(`gimmick-${id}`);
+      if (id === 1) {
+        el.innerHTML = "<strong>ความลับ:</strong> จุดสีขาว (Fawn Spots) ช่วยให้ลูกกวางซ่อนตัวจากแสงแดดและเงาไม้ในป่าได้อย่างแนบเนียน ✨";
+      } else if (id === 2) {
+        el.innerHTML = "<strong>ความลับ:</strong> หูกวางสามารถหมุนได้อิสระเพื่อรับเสียงรอบตัว โดยที่เจ้าตัวไม่ต้องขยับหัวเลย เก่งมากๆ 🦌";
+      } else if (id === 3) {
+        el.innerHTML = "<strong>ความลับ:</strong> กวางเป็นสัญลักษณ์แห่งความสุข ความสงบ และพลังบวก ใครเห็นก็มักจะตกหลุมรักทันที 🌸";
+      }
+      el.classList.add("text-pink-950", "font-medium");
+    }
+
+    // NEW GIMMICK 1 Logic: Feed Bambi
+    let fedCount = 0;
+    function feedBambi(foodName) {
+      fedCount++;
+      const statusEl = document.getElementById('feedingStatus');
+      if (fedCount <= 3) {
+        statusEl.innerHTML = `น้องกวางเคี้ยวตุ้ยๆ อย่างมีความสุขกับ <span class="font-bold text-amber-700">${foodName}</span> (${fedCount}/3 ขนม)`;
+      } else {
+        statusEl.innerHTML = `<span class="font-bold text-pink-600">พุงกางแล้ว! น้องกวางส่งเสียงร้องขอบคุณชาวแก๊งด้วยความอิ่มเอม 🦌💖</span>`;
+      }
+      playBellSound();
+    }
+
+    // NEW GIMMICK 2 Logic: Daily Deer Fortune
+    function drawFortune() {
+      const fortunes = [
+        "🦌 'วันนี้โชคดีเป็นพิเศษ! จะหยิบจับไอเทมไหนก็สวยปัง แมตช์ชุดเข้ากับคาเฟ่ได้เป๊ะแบบ 10/10'",
+        "🌸 'ดวงความน่ารักพุ่งกระฉูด! จะมีคนทักว่าชุดนุ่มฟูวันนี้ดูน่ากอดเป็นพิเศษ'",
+        "🤎 'พลังงานบวกจากป่าใหญ่โอบล้อม จะผ่านเรื่องยากๆ วันนี้ไปได้ด้วยรอยยิ้มหวานๆ'",
+        "✨ 'เตรียมรับข่าวดีเรื่องของกินอร่อยๆ และคาเฟ่ใหม่ๆ ที่ชาวแก๊งชวนไปเช็คอินเร็วๆ นี้'"
+      ];
+      const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+      const fortuneEl = document.getElementById('fortuneText');
+      fortuneEl.innerText = randomFortune;
+      fortuneEl.classList.add('scale-105', 'transition', 'duration-300');
+      setTimeout(() => fortuneEl.classList.remove('scale-105'), 300);
+    }
+
+    // Falling Particles Generator (Snow / Petals)
+    function initParticles() {
+      const container = document.getElementById('particleContainer');
+      const symbols = ['🌸', '✨', '🤎', '⭐', '🍂'];
+      for (let i = 0; i < 15; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.fontSize = (Math.random() * 10 + 12) + 'px';
+        p.style.animationDuration = (Math.random() * 6 + 6) + 's';
+        p.style.animationDelay = (Math.random() * 5) + 's';
+        container.appendChild(p);
+      }
+    }
+    window.addEventListener('DOMContentLoaded', initParticles);
+
+    // Interactive Functions
+    function petBambi() {
+      const banner = document.getElementById('interactiveBanner');
+      const bannerText = document.getElementById('bannerText');
+      const messages = [
+        "น้องกวางน้อยกระดิกหูทักทาย: 'ยินดีต้อนรับชาวแก๊งคนรักกวางเข้าสู่คอมมูนิตี้ของเรานะคะ! 🤎'",
+        "กวางน้อยส่งเสียงร้องเบาๆ: 'วันนี้มีเพื่อนๆ แวะมาเยี่ยมคอมมูนิตี้เยอะแยะเลย ดีใจจัง! ✨'",
+        "กวางน้อยเอียงคอสงสัย: 'เพื่อนๆ ชอบไอเทมชิ้นไหนในคอมมูนิตี้เรามากที่สุดจ๊ะ? 🦌'",
+        "กวางน้อยส่งยิ้มหวาน: 'ขอให้วันนี้เป็นวันที่น่ารักและอบอุ่นสำหรับคนรักกวางทุกคนนะ! 🌸'"
+      ];
+      const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+      bannerText.innerText = randomMsg;
+      banner.classList.remove('hidden');
+      banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    let loveCount = 128;
+    function sendLove() {
+      loveCount++;
+      document.getElementById('loveCount').innerText = loveCount;
+      const loveBtn = document.getElementById('loveBtn');
+      loveBtn.classList.add('bg-pink-200', 'scale-105');
+      setTimeout(() => loveBtn.classList.remove('scale-105'), 200);
+    }
+
+    let musicPlaying = false;
+    function toggleMusic() {
+      musicPlaying = !musicPlaying;
+      const modalText = document.getElementById('modalMusicText');
+      if (musicPlaying) {
+        modalText.innerText = "ปิดเสียงกระดิ่งกวางน้อย";
+        playBellSound();
+      } else {
+        modalText.innerText = "เปิดเสียงกระดิ่งกวางน้อย";
+      }
+    }
+
+    function toggleBambiModal(show) {
+      const modal = document.getElementById('bambiModal');
+      if (show) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function playBellSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.5);
+      } catch (e) {
+        console.log("Audio context not allowed yet");
+      }
+    }
+  </script>
+</body>
+</html>

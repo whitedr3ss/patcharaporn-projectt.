@@ -1,0 +1,52 @@
+<style>
+  :root {
+    --bg: #fefcfb;
+    --card: #ffffff;
+    --text: #543c2e;
+    --mute: #9d8374;
+    --line: #f0e3dc;
+    --a: #d98880;
+    --b: #b88d70;
+    --g: linear-gradient(135deg, #d98880 0%, #b88d70 100%);
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Prompt', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  .grad-text {
+    background: var(--g);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Floating hearts background animation */
+  @keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+    50% { transform: translateY(-15px) rotate(5deg); opacity: 1; }
+    100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+  }
+
+  .floating {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f9f3ef;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #e3ccbc;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #cfad96;
+  }
+</style>
